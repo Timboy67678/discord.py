@@ -820,6 +820,27 @@ class Client(object):
         self._create_websocket(gateway.json().get('url'), reconnect=False)
         self._is_logged_in = True
 
+    def login_token(self, token):
+        """Logs in the user with the following credentials and initialises
+        the connection to Discord.
+
+        After this function is called, :attr:`is_logged_in` returns True if no
+        errors occur. If an error occurs during the login process, then
+        :exc:`LoginFailure` or :exc:`HTTPException` is raised.
+
+        This function raises :exc:`GatewayNotFound` if it was unavailable to connect
+        to a websocket gateway.
+
+        :param str token: The token for logins
+        """
+
+        self.token = token
+        self.headers['authorization'] = 'Bot {}'.format(self.token)
+
+        gateway = requests.get(endpoints.GATEWAY, headers=self.headers)
+        self._create_websocket(gateway.json().get('url'), reconnect=False)
+        self._is_logged_in = True    
+
     def register(self, username, invite, fingerprint=None):
         """Register a new unclaimed account using an invite to a server.
 
